@@ -1,5 +1,7 @@
+// lib/app/modules/home/views/home_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../routes/app_pages.dart';
 import '../../transaction/controllers/transaction_controller.dart';
 import '../controllers/home_controller.dart';
 import '../../../core/values/app_colors.dart';
@@ -10,6 +12,16 @@ class HomeView extends GetView<HomeController> {
   @override
   Widget build(BuildContext context) {
     final statusBarHeight = MediaQuery.of(context).padding.top;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Define responsive sizes
+    final isTablet = screenWidth > 600;
+    final cardPadding = isTablet ? 24.0 : 16.0;
+    final headerFontSize = isTablet ? 32.0 : 24.0;
+    final titleFontSize = isTablet ? 22.0 : 18.0;
+    final bodyFontSize = isTablet ? 16.0 : 14.0;
+    final iconSize = isTablet ? 28.0 : 20.0;
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -25,29 +37,36 @@ class HomeView extends GetView<HomeController> {
             children: [
               // Green header with user info
               Container(
-                margin: const EdgeInsets.symmetric(vertical: 32),
-                child: _buildHeader(statusBarHeight),
+                margin: EdgeInsets.symmetric(vertical: screenHeight * 0.04),
+                child: _buildHeader(statusBarHeight, headerFontSize),
               ),
 
               // Transaction card
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                child: _buildTransactionCard(),
+                padding: EdgeInsets.fromLTRB(
+                    screenWidth * 0.05,
+                    0,
+                    screenWidth * 0.05,
+                    0
+                ),
+                child: _buildTransactionCard(titleFontSize, bodyFontSize),
               ),
-
-              // Action buttons
-              // _buildActionButtons(),
 
               // Shops list header
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                padding: EdgeInsets.fromLTRB(
+                    screenWidth * 0.05,
+                    screenHeight * 0.025,
+                    screenWidth * 0.05,
+                    screenHeight * 0.015
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'My Shops',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: titleFontSize,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -55,89 +74,94 @@ class HomeView extends GetView<HomeController> {
                       onPressed: () {
                         // Navigate to shops list
                       },
-                      child: const Text('View more'),
+                      child: Text(
+                        'View more',
+                        style: TextStyle(fontSize: bodyFontSize),
+                      ),
                     ),
                   ],
                 ),
               ),
 
               // Shops list
-              _buildShopsList(),
+              _buildShopsList(screenWidth, bodyFontSize, iconSize, cardPadding),
 
               // Bottom spacing
-              const SizedBox(height: 80),
+              SizedBox(height: screenHeight * 0.1),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavBar(),
+      bottomNavigationBar: _buildBottomNavBar(iconSize, bodyFontSize),
     );
   }
 
-  Widget _buildHeader(double statusBarHeight) {
+  Widget _buildHeader(double statusBarHeight, double fontSize) {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, statusBarHeight + 20, 20, 20),
+      padding: EdgeInsets.fromLTRB(24, statusBarHeight + 20, 24, 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
               Obx(
-                () => controller.userImageUrl.value.isNotEmpty
+                    () => controller.userImageUrl.value.isNotEmpty
                     ? CircleAvatar(
-                        radius: 20,
-                        backgroundImage:
-                            NetworkImage(controller.userImageUrl.value),
-                      )
+                  radius: 24,
+                  backgroundImage:
+                  NetworkImage(controller.userImageUrl.value),
+                )
                     : const CircleAvatar(
-                        radius: 20,
-                        backgroundColor: AppColors.primary,
-                        child: Icon(
-                          Icons.person,
-                          color: AppColors.white,
-                        ),
-                      ),
+                  radius: 24,
+                  backgroundColor: AppColors.primary,
+                  child: Icon(
+                    Icons.person,
+                    color: AppColors.white,
+                    size: 24,
+                  ),
+                ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Welcome Back',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: fontSize * 0.6,
                       color: Colors.black87,
                     ),
                   ),
                   Obx(() => Text(
-                        controller.username.value,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      )),
+                    controller.username.value,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  )),
                 ],
               ),
             ],
           ),
-          IconButton(
-            onPressed: () {
-              controller.logout();
-            },
-            icon: const Icon(
-              Icons.logout,
-              color: Colors.black87,
-            ),
-          ),
+          // IconButton(
+          //   onPressed: () {
+          //     controller.logout();
+          //   },
+          //   icon: Icon(
+          //     Icons.logout,
+          //     color: Colors.black87,
+          //     size: fontSize * 0.9,
+          //   ),
+          // ),
         ],
       ),
     );
   }
 
-  Widget _buildTransactionCard() {
+  Widget _buildTransactionCard(double titleSize, double bodySize) {
     return Transform.translate(
-      offset: const Offset(0, -20), // Use Transform instead of negative margin
+      offset: const Offset(0, -20),
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -152,33 +176,33 @@ class HomeView extends GetView<HomeController> {
           ],
         ),
         child: Container(
-          padding: const EdgeInsets.all(15),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppColors.primary,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Pending Amount',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: titleSize,
                   color: Colors.white70,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Obx(() => Text(
-                        '₹ ${controller.totalPendingAmount.value.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      )),
+                    '₹ ${controller.totalPendingAmount.value.toStringAsFixed(2)}',
+                    style: TextStyle(
+                      fontSize: titleSize * 1.5,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  )),
                   Container(
                     width: 60,
                     height: 60,
@@ -192,12 +216,12 @@ class HomeView extends GetView<HomeController> {
                     ),
                     child: Center(
                       child: Obx(() => Text(
-                            '${controller.activeShops.value}',
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )),
+                        '${controller.activeShops.value}',
+                        style: TextStyle(
+                          fontSize: titleSize,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
                     ),
                   ),
                 ],
@@ -209,41 +233,41 @@ class HomeView extends GetView<HomeController> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Next Date',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: bodySize * 0.9,
                           color: Colors.white70,
                         ),
                       ),
                       Obx(() => Text(
-                            controller.payoffDate.value,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          )),
+                        controller.payoffDate.value,
+                        style: TextStyle(
+                          fontSize: bodySize,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )),
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      const Text(
+                      Text(
                         'Shops Active',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: bodySize * 0.9,
                           color: Colors.white70,
                         ),
                       ),
                       Obx(() => Text(
-                            '${controller.activeShops.value}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          )),
+                        '${controller.activeShops.value}',
+                        style: TextStyle(
+                          fontSize: bodySize,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      )),
                     ],
                   ),
                 ],
@@ -255,62 +279,7 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 20, 30, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildActionButton(
-            icon: Icons.store,
-            label: 'Shop\nRequest',
-            onTap: () => controller.navigateToCreateTransaction(),
-          ),
-          _buildActionButton(
-            icon: Icons.payment,
-            label: 'Payment',
-            onTap: () => controller.navigateToTransactions(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              color: Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[700],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildShopsList() {
+  Widget _buildShopsList(double screenWidth, double fontSize, double iconSize, double padding) {
     return Obx(() {
       if (controller.isLoadingShops.value) {
         return const Center(
@@ -329,7 +298,7 @@ class HomeView extends GetView<HomeController> {
               children: [
                 Icon(
                   Icons.store_outlined,
-                  size: 48,
+                  size: iconSize * 2,
                   color: Colors.grey[400],
                 ),
                 const SizedBox(height: 10),
@@ -337,6 +306,7 @@ class HomeView extends GetView<HomeController> {
                   'No shops found',
                   style: TextStyle(
                     color: Colors.grey[600],
+                    fontSize: fontSize,
                   ),
                 ),
               ],
@@ -345,22 +315,41 @@ class HomeView extends GetView<HomeController> {
         );
       }
 
-      return ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: controller.shops.length,
-        itemBuilder: (context, index) {
-          final shop = controller.shops[index];
-          // Calculate a percentage based on the shop index (for demo purposes)
-          final percentage = (index + 1) * 25;
-          return _buildShopCard(shop, percentage);
-        },
+      // Create a responsive grid or list based on screen width
+      return Padding(
+        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+        child: screenWidth > 600
+            ? GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.5,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+          ),
+          itemCount: controller.shops.length,
+          itemBuilder: (context, index) {
+            final shop = controller.shops[index];
+            final percentage = (index + 1) * 25;
+            return _buildShopCard(shop, percentage, fontSize, iconSize, padding);
+          },
+        )
+            : ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: controller.shops.length,
+          itemBuilder: (context, index) {
+            final shop = controller.shops[index];
+            final percentage = (index + 1) * 25;
+            return _buildShopCard(shop, percentage, fontSize, iconSize, padding);
+          },
+        ),
       );
     });
   }
 
-  Widget _buildShopCard(shop, int percentage) {
+  Widget _buildShopCard(shop, int percentage, double fontSize, double iconSize, double padding) {
     // Format the amount for display
     double amount = double.tryParse(shop.initialAmount ?? '0') ?? 0.0;
 
@@ -382,7 +371,7 @@ class HomeView extends GetView<HomeController> {
         onTap: () => controller.navigateToShopDetails(shop.id ?? 0),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(15),
+          padding: EdgeInsets.all(padding),
           child: Column(
             children: [
               Row(
@@ -398,7 +387,7 @@ class HomeView extends GetView<HomeController> {
                     child: Icon(
                       Icons.store,
                       color: Colors.green[700],
-                      size: 20,
+                      size: iconSize,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -409,15 +398,15 @@ class HomeView extends GetView<HomeController> {
                       children: [
                         Text(
                           shop.shopName ?? 'Unknown Shop',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: fontSize * 1.1,
                           ),
                         ),
                         Text(
                           '${shop.address} • GST: ${shop.gstNo}',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: fontSize * 0.9,
                             color: Colors.grey[600],
                           ),
                           maxLines: 1,
@@ -440,10 +429,10 @@ class HomeView extends GetView<HomeController> {
                     child: Center(
                       child: Text(
                         '$percentage%',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Colors.green,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: fontSize * 0.8,
                         ),
                       ),
                     ),
@@ -457,14 +446,14 @@ class HomeView extends GetView<HomeController> {
                   // Amount
                   Text(
                     '₹ ${amount.toStringAsFixed(2)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: fontSize * 1.2,
                     ),
                   ),
-                  // Pay button - FIXED to avoid infinite width constraints
+                  // Pay button
                   SizedBox(
-                    height: 36, // Fixed height
+                    height: 36,
                     child: ElevatedButton(
                       onPressed: () {
                         TransactionController transactionController = Get.find<TransactionController>();
@@ -479,14 +468,13 @@ class HomeView extends GetView<HomeController> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        minimumSize: const Size(80, 36), // Specify minimum size
-                        maximumSize:
-                            const Size(120, 36), // Specify maximum size
+                        minimumSize: const Size(80, 36),
+                        maximumSize: const Size(120, 36),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Pay off',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: fontSize,
                         ),
                       ),
                     ),
@@ -500,7 +488,8 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildBottomNavBar() {
+  // lib/app/modules/home/views/home_view.dart (update the _buildBottomNavBar method)
+  Widget _buildBottomNavBar(double iconSize, double fontSize) {
     // Get TransactionController to navigate to transaction screens
     final TransactionController transactionController = Get.find<TransactionController>();
 
@@ -527,6 +516,8 @@ class HomeView extends GetView<HomeController> {
                 label: 'Home',
                 isSelected: true,
                 onTap: () {}, // Already on home
+                iconSize: iconSize,
+                fontSize: fontSize,
               ),
               _buildNavItem(
                 icon: Icons.pending_actions,
@@ -535,6 +526,8 @@ class HomeView extends GetView<HomeController> {
                 onTap: () {
                   transactionController.navigateToPendingTransactions();
                 },
+                iconSize: iconSize,
+                fontSize: fontSize,
               ),
               _buildNavItem(
                 icon: Icons.check_circle_outline,
@@ -543,13 +536,19 @@ class HomeView extends GetView<HomeController> {
                 onTap: () {
                   transactionController.navigateToApprovedTransactions();
                 },
+                iconSize: iconSize,
+                fontSize: fontSize,
               ),
-              // _buildNavItem(
-              //   icon: Icons.person,
-              //   label: 'Profile',
-              //   isSelected: false,
-              //   onTap: controller.logout,
-              // ),
+              _buildNavItem(
+                icon: Icons.person,
+                label: 'Profile',
+                isSelected: false,
+                onTap: () {
+                  controller.navigateToProfile();
+                },
+                iconSize: iconSize,
+                fontSize: fontSize,
+              ),
             ],
           ),
         ),
@@ -562,6 +561,8 @@ class HomeView extends GetView<HomeController> {
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
+    required double iconSize,
+    required double fontSize,
   }) {
     return InkWell(
       onTap: onTap,
@@ -571,12 +572,13 @@ class HomeView extends GetView<HomeController> {
           Icon(
             icon,
             color: isSelected ? AppColors.primary : Colors.grey,
+            size: iconSize * 0.8,
           ),
           const SizedBox(height: 4),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: fontSize * 0.8,
               color: isSelected ? AppColors.primary : Colors.grey,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
             ),

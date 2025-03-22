@@ -1,3 +1,4 @@
+// lib/app/core/domain/repositories/profile_repository.dart (update)
 import 'dart:io';
 import 'package:get/get.dart';
 
@@ -55,10 +56,8 @@ class ProfileRepository {
 
       // Check for success response
       if (response.success && response.data != null) {
-        final responseData = response.data;
-
         // Parse user data
-        final user = UserModel.fromJson(responseData['user'] ?? {});
+        final user = UserModel.fromJson(response.data['user'] ?? {});
 
         // Save updated user data
         await _localStorageProvider.saveUser(user);
@@ -74,6 +73,46 @@ class ProfileRepository {
     } catch (e) {
       return ApiResponse.error(
         message: 'Profile update failed: ${e.toString()}',
+      );
+    }
+  }
+
+  // Change user password
+  Future<ApiResponse<bool>> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String passwordConfirmation,
+  }) async {
+    try {
+      // Create form data
+      Map<String, dynamic> data = {
+        'old_password': oldPassword,
+        'password': newPassword,
+        'password_confirmation': passwordConfirmation,
+      };
+
+      // Send password change request
+      final response = await _apiProvider.post(
+        ApiConstants.password,
+        data: data,
+      );
+
+      // Just check if the API response was successful
+      if (response.success) {
+        return ApiResponse.success(
+          message: response.message,
+          data: true,
+        );
+      }
+
+      // Return the error response
+      return ApiResponse.error(
+        message: response.message,
+        errors: response.errors,
+      );
+    } catch (e) {
+      return ApiResponse.error(
+        message: 'Password change failed: ${e.toString()}',
       );
     }
   }

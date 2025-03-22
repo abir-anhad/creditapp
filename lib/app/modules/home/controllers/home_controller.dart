@@ -105,6 +105,10 @@ class HomeController extends GetxController {
     Get.toNamed(Routes.CREATE_TRANSACTION);
   }
 
+  void navigateToProfile() {
+    Get.toNamed(Routes.PROFILE);
+  }
+
   void logout() {
     _authService.logout();
   }

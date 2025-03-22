@@ -367,6 +367,10 @@ class TransactionController extends GetxController {
     Get.offAllNamed(Routes.HOME);
   }
 
+  void navigateToProfile() {
+    Get.toNamed(Routes.PROFILE);
+  }
+
   // Logout method (reuses the AuthService)
   void logout() {
     _authService.logout();

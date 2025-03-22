@@ -1,3 +1,4 @@
+// lib/app/modules/transaction/views/transaction_details_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/transaction_controller.dart';
@@ -11,27 +12,28 @@ class TransactionDetailView extends GetView<TransactionController> {
     final args = Get.arguments as Map<String, dynamic>;
     final bool isPending = args['isPending'] ?? true;
 
+    // Get screen dimensions
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Define responsive sizes
+    final isTablet = screenWidth > 600;
+    final cardPadding = isTablet ? 24.0 : 16.0;
+    final titleFontSize = isTablet ? 22.0 : 18.0;
+    final bodyFontSize = isTablet ? 16.0 : 14.0;
+    final smallFontSize = isTablet ? 14.0 : 12.0;
+    final iconSize = isTablet ? 28.0 : 20.0;
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.grey[100],
-        // appBar: AppBar(
-        //   backgroundColor: isPending ? AppColors.primary : Colors.green,
-        //   foregroundColor: Colors.white,
-        //   elevation: 0,
-        //   title: const Text(
-        //     'Transaction Details',
-        //     style: TextStyle(
-        //       fontWeight: FontWeight.bold,
-        //     ),
-        //   ),
-        // ),
         body: Obx(() {
           if (controller.isLoadingTransactionDetails.value) {
             return const Center(
               child: CircularProgressIndicator(),
             );
           }
-      
+
           if (controller.transactionDetails.isEmpty) {
             return Center(
               child: Column(
@@ -39,18 +41,18 @@ class TransactionDetailView extends GetView<TransactionController> {
                 children: [
                   Icon(
                     Icons.info_outline,
-                    size: 64,
+                    size: iconSize * 2.5,
                     color: Colors.grey[400],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: screenHeight * 0.02),
                   Text(
                     'No transaction details found',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: bodyFontSize,
                       color: Colors.grey[600],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: screenHeight * 0.02),
                   TextButton(
                     onPressed: () {
                       isPending
@@ -61,6 +63,7 @@ class TransactionDetailView extends GetView<TransactionController> {
                       isPending ? 'Back to Pending' : 'Back to Approved',
                       style: TextStyle(
                         color: isPending ? AppColors.primary : Colors.green,
+                        fontSize: bodyFontSize,
                       ),
                     ),
                   ),
@@ -68,7 +71,7 @@ class TransactionDetailView extends GetView<TransactionController> {
               ),
             );
           }
-      
+
           return Column(
             children: [
               Expanded(
@@ -76,17 +79,25 @@ class TransactionDetailView extends GetView<TransactionController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildSummaryCard(isPending),
-                      _buildTransactionsDetailList(isPending),
-                      const SizedBox(height: 24),
+                      _buildSummaryCard(isPending, screenWidth, titleFontSize,
+                          bodyFontSize, smallFontSize, cardPadding),
+                      _buildTransactionsDetailList(
+                          isPending,
+                          screenWidth,
+                          titleFontSize,
+                          bodyFontSize,
+                          smallFontSize,
+                          iconSize,
+                          cardPadding),
+                      SizedBox(height: screenHeight * 0.03),
                     ],
                   ),
                 ),
               ),
-              // Using a container instead of BottomAppBar to avoid layout issues
+              // Bottom navigation bar
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(cardPadding),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
@@ -108,12 +119,13 @@ class TransactionDetailView extends GetView<TransactionController> {
                     },
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      padding:
+                          EdgeInsets.symmetric(vertical: cardPadding * 0.75),
                       alignment: Alignment.center,
-                      child: const Text(
+                      child: Text(
                         'Back',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: bodyFontSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
@@ -129,13 +141,14 @@ class TransactionDetailView extends GetView<TransactionController> {
     );
   }
 
-  Widget _buildSummaryCard(bool isPending) {
+  Widget _buildSummaryCard(bool isPending, double screenWidth, double titleSize,
+      double bodySize, double smallSize, double padding) {
     // Get date from the first transaction detail
     final date = controller.transactionDetails.isNotEmpty
         ? controller.transactionDetails.first.date
         : 'N/A';
 
-    // Calculate total amount - convert string to double first
+    // Calculate total amount
     double totalAmount = 0.0;
     if (controller.transactionDetails.isNotEmpty) {
       for (var detail in controller.transactionDetails) {
@@ -144,11 +157,11 @@ class TransactionDetailView extends GetView<TransactionController> {
     }
 
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.all(screenWidth * 0.04),
+      padding: EdgeInsets.all(padding),
       decoration: BoxDecoration(
         color: isPending ? AppColors.primary : Colors.green,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
@@ -164,23 +177,24 @@ class TransactionDetailView extends GetView<TransactionController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Transaction Date',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: smallSize,
                   color: Colors.white70,
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: EdgeInsets.symmetric(
+                    horizontal: padding * 0.75, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   isPending ? 'Pending' : 'Approved',
-                  style: const TextStyle(
-                    fontSize: 12,
+                  style: TextStyle(
+                    fontSize: smallSize,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                   ),
@@ -188,90 +202,56 @@ class TransactionDetailView extends GetView<TransactionController> {
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: padding * 0.5),
           Text(
             date,
-            style: const TextStyle(
-              fontSize: 20,
+            style: TextStyle(
+              fontSize: titleSize,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: padding),
+          Text(
             'Total Amount',
             style: TextStyle(
-              fontSize: 14,
+              fontSize: smallSize,
               color: Colors.white70,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: padding * 0.25),
           Text(
             '₹ ${totalAmount.toStringAsFixed(2)}',
-            style: const TextStyle(
-              fontSize: 24,
+            style: TextStyle(
+              fontSize: titleSize * 1.2,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: padding),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Items',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: smallSize,
                       color: Colors.white70,
                     ),
                   ),
                   Text(
                     '${controller.transactionDetails.length}',
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: bodySize,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                 ],
               ),
-              // if (isPending)
-                // Material(
-                //   color: Colors.white,
-                //   borderRadius: BorderRadius.circular(20),
-                //   child: InkWell(
-                //     onTap: () {
-                //       controller.navigateToCreateTransaction();
-                //     },
-                //     borderRadius: BorderRadius.circular(20),
-                //     child: Container(
-                //       height: 36,
-                //       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                //       child: const Row(
-                //         mainAxisSize: MainAxisSize.min,
-                //         children: [
-                //           // Icon(
-                //           //   Icons.add,
-                //           //   size: 16,
-                //           //   color: AppColors.primary,
-                //           // ),
-                //           SizedBox(width: 4),
-                //           // Text(
-                //           //   'Add Item',
-                //           //   style: TextStyle(
-                //           //     fontWeight: FontWeight.bold,
-                //           //     fontSize: 12,
-                //           //     color: AppColors.primary,
-                //           //   ),
-                //           // ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
             ],
           ),
         ],
@@ -279,28 +259,57 @@ class TransactionDetailView extends GetView<TransactionController> {
     );
   }
 
-  Widget _buildTransactionsDetailList(bool isPending) {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: controller.transactionDetails.length,
-      itemBuilder: (context, index) {
-        final detail = controller.transactionDetails[index];
-        return _buildTransactionDetailCard(detail, isPending);
-      },
-    );
+  Widget _buildTransactionsDetailList(
+      bool isPending,
+      double screenWidth,
+      double titleSize,
+      double bodySize,
+      double smallSize,
+      double iconSize,
+      double padding) {
+    final isTablet = screenWidth > 600;
+
+    return isTablet
+        ? GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 1.1,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+            ),
+            itemCount: controller.transactionDetails.length,
+            itemBuilder: (context, index) {
+              final detail = controller.transactionDetails[index];
+              return _buildTransactionDetailCard(detail, isPending, titleSize,
+                  bodySize, smallSize, iconSize, padding);
+            },
+          )
+        : ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
+            itemCount: controller.transactionDetails.length,
+            itemBuilder: (context, index) {
+              final detail = controller.transactionDetails[index];
+              return _buildTransactionDetailCard(detail, isPending, titleSize,
+                  bodySize, smallSize, iconSize, padding);
+            },
+          );
   }
 
-  Widget _buildTransactionDetailCard(detail, bool isPending) {
+  Widget _buildTransactionDetailCard(detail, bool isPending, double titleSize,
+      double bodySize, double smallSize, double iconSize, double padding) {
     // Convert string amount to double for display
     final double amount = double.tryParse(detail.amount) ?? 0.0;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: padding * 0.75),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.1),
@@ -311,7 +320,7 @@ class TransactionDetailView extends GetView<TransactionController> {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(padding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -340,7 +349,7 @@ class TransactionDetailView extends GetView<TransactionController> {
                                 color: isPending
                                     ? Colors.orange[700]
                                     : Colors.green[700],
-                                size: 20,
+                                size: iconSize * 0.7,
                               ),
                             ),
                           ),
@@ -348,9 +357,9 @@ class TransactionDetailView extends GetView<TransactionController> {
                           Expanded(
                             child: Text(
                               detail.shopName,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: bodySize * 1.1,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -358,28 +367,33 @@ class TransactionDetailView extends GetView<TransactionController> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: padding * 0.75),
                       Text(
                         detail.description,
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: smallSize,
                           color: Colors.grey[600],
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: padding * 0.5),
                       Row(
                         children: [
                           Icon(
                             Icons.person,
-                            size: 14,
+                            size: iconSize * 0.6,
                             color: Colors.grey[600],
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            detail.ownerName,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
+                          Expanded(
+                            child: Text(
+                              detail.ownerName,
+                              style: TextStyle(
+                                fontSize: smallSize,
+                                color: Colors.grey[600],
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -389,14 +403,14 @@ class TransactionDetailView extends GetView<TransactionController> {
                 ),
                 Text(
                   '₹ ${amount.toStringAsFixed(2)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    fontSize: bodySize,
                   ),
                 ),
               ],
             ),
-            const Divider(height: 24),
+            Divider(height: padding * 1.5),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -404,14 +418,14 @@ class TransactionDetailView extends GetView<TransactionController> {
                   children: [
                     Icon(
                       Icons.phone,
-                      size: 14,
+                      size: iconSize * 0.6,
                       color: Colors.grey[600],
                     ),
                     const SizedBox(width: 4),
                     Text(
                       detail.shopPhone,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: smallSize,
                         color: Colors.grey[600],
                       ),
                     ),
@@ -420,7 +434,7 @@ class TransactionDetailView extends GetView<TransactionController> {
                 Text(
                   detail.transactionType,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: smallSize,
                     fontWeight: FontWeight.bold,
                     color: detail.transactionType.toLowerCase() == 'cash'
                         ? Colors.green[700]
@@ -430,7 +444,7 @@ class TransactionDetailView extends GetView<TransactionController> {
               ],
             ),
             if (detail.image != null && detail.image!.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: padding * 0.75),
               Container(
                 width: double.infinity,
                 height: 150,
