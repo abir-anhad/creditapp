@@ -5,6 +5,7 @@ import '../../../core/services/auth_service.dart';
 import '../controllers/profile_controller.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/state/profile_state.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -99,60 +100,60 @@ class ProfileView extends GetView<ProfileController> {
                     ],
                   ),
                 ),
-                // Profile picture
+                // Profile picture with GestureDetector for tap functionality
                 Positioned(
                   bottom: -imageSize / 2,
-                  child: Stack(
-                    children: [
-                      // Profile image
-                      Container(
-                        width: imageSize,
-                        height: imageSize,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 4,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                          image: currentUser?.image != null && currentUser!.image!.isNotEmpty
-                              ? DecorationImage(
-                            image: NetworkImage(currentUser.image!),
-                            fit: BoxFit.cover,
-                          )
-                              : null,
-                        ),
-                        child: currentUser?.image == null || currentUser!.image!.isEmpty
-                            ? Icon(
-                          Icons.person,
-                          size: imageSize * 0.6,
-                          color: Colors.grey[400],
-                        )
-                            : null,
-                      ),
-                      // Edit profile image button
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
+                  child: GestureDetector(
+                    onTap: controller.selectProfileImage,
+                    child: Stack(
+                      children: [
+                        // Profile image
+                        Container(
+                          width: imageSize,
+                          height: imageSize,
                           decoration: BoxDecoration(
-                            color: AppColors.primary,
+                            color: Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: Colors.white,
-                              width: 2,
+                              width: 4,
                             ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                            image: currentUser?.image != null && currentUser!.image!.isNotEmpty
+                                ? DecorationImage(
+                              image: NetworkImage(currentUser.image!),
+                              fit: BoxFit.cover,
+                            )
+                                : null,
                           ),
-                          child: InkWell(
-                            onTap: controller.selectProfileImage,
+                          child: currentUser?.image == null || currentUser!.image!.isEmpty
+                              ? Icon(
+                            Icons.person,
+                            size: imageSize * 0.6,
+                            color: Colors.grey[400],
+                          )
+                              : null,
+                        ),
+                        // Edit profile image button
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2,
+                              ),
+                            ),
                             child: Icon(
                               Icons.camera_alt,
                               color: Colors.white,
@@ -160,8 +161,8 @@ class ProfileView extends GetView<ProfileController> {
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -279,6 +280,63 @@ class ProfileView extends GetView<ProfileController> {
                               ),
                             ),
                             SizedBox(height: contentPadding * 1.5),
+
+                            // Show selected images preview if available
+                            if (controller.selectedProfileImage.value != null || controller.selectedCoverImage.value != null)
+                              Padding(
+                                padding: EdgeInsets.only(bottom: contentPadding),
+                                child: Row(
+                                  children: [
+                                    if (controller.selectedProfileImage.value != null) ...[
+                                      Column(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.file(
+                                              controller.selectedProfileImage.value!,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Profile',
+                                            style: TextStyle(
+                                              fontSize: bodyFontSize * 0.8,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                    const SizedBox(width: 16),
+                                    if (controller.selectedCoverImage.value != null) ...[
+                                      Column(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.file(
+                                              controller.selectedCoverImage.value!,
+                                              width: 80,
+                                              height: 60,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            'Cover',
+                                            style: TextStyle(
+                                              fontSize: bodyFontSize * 0.8,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
 
                             // Update profile button
                             SizedBox(

@@ -190,4 +190,24 @@ class AuthRepository {
   UserModel? getCurrentUser() {
     return _localStorageProvider.getUser();
   }
+
+  // Perform an internal re-login to refresh user data
+  Future<ApiResponse<UserModel>> refreshUserData() async {
+    // Get stored credentials
+    final storedEmail = _localStorageProvider.getStoredEmail();
+    final storedPassword = _localStorageProvider.getStoredPassword();
+
+    // If we don't have stored credentials, we can't refresh
+    if (storedEmail == null || storedPassword == null) {
+      return ApiResponse.error(
+        message: 'Cannot refresh user data: No stored credentials',
+      );
+    }
+
+    // Perform login with stored credentials
+    return await login(
+      email: storedEmail,
+      password: storedPassword,
+    );
+  }
 }

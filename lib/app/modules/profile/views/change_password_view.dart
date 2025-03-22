@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/state/profile_state.dart';
 
 class ChangePasswordView extends GetView<ProfileController> {
   const ChangePasswordView({super.key});
@@ -89,117 +90,116 @@ class ChangePasswordView extends GetView<ProfileController> {
 
                     // Current password field
                     Obx(() => TextFormField(
-                          controller: controller.oldPasswordController,
-                          obscureText: controller.obscureOldPassword.value,
-                          validator: controller.validateOldPassword,
-                          style: TextStyle(fontSize: bodyFontSize),
-                          decoration: InputDecoration(
-                            labelText: 'Current Password',
-                            labelStyle: TextStyle(fontSize: bodyFontSize),
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
-                              size: iconSize,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                controller.obscureOldPassword.value
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                size: iconSize,
-                              ),
-                              onPressed: controller.toggleOldPasswordVisibility,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: contentPadding,
-                              vertical: contentPadding * 0.75,
-                            ),
+                      controller: controller.oldPasswordController,
+                      obscureText: controller.obscureOldPassword.value,
+                      validator: controller.validateOldPassword,
+                      style: TextStyle(fontSize: bodyFontSize),
+                      decoration: InputDecoration(
+                        labelText: 'Current Password',
+                        labelStyle: TextStyle(fontSize: bodyFontSize),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          size: iconSize,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            controller.obscureOldPassword.value
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            size: iconSize,
                           ),
-                        )),
+                          onPressed: controller.toggleOldPasswordVisibility,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: contentPadding,
+                          vertical: contentPadding * 0.75,
+                        ),
+                      ),
+                    )),
                     SizedBox(height: contentPadding),
 
-                    // lib/app/modules/profile/views/change_password_view.dart (continued)
                     // New password field
                     Obx(() => TextFormField(
-                          controller: controller.newPasswordController,
-                          obscureText: controller.obscureNewPassword.value,
-                          validator: controller.validateNewPassword,
-                          style: TextStyle(fontSize: bodyFontSize),
-                          decoration: InputDecoration(
-                            labelText: 'New Password',
-                            labelStyle: TextStyle(fontSize: bodyFontSize),
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
-                              size: iconSize,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                controller.obscureNewPassword.value
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                size: iconSize,
-                              ),
-                              onPressed: controller.toggleNewPasswordVisibility,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: contentPadding,
-                              vertical: contentPadding * 0.75,
-                            ),
+                      controller: controller.newPasswordController,
+                      obscureText: controller.obscureNewPassword.value,
+                      validator: controller.validateNewPassword,
+                      style: TextStyle(fontSize: bodyFontSize),
+                      decoration: InputDecoration(
+                        labelText: 'New Password',
+                        labelStyle: TextStyle(fontSize: bodyFontSize),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          size: iconSize,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            controller.obscureNewPassword.value
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            size: iconSize,
                           ),
-                        )),
+                          onPressed: controller.toggleNewPasswordVisibility,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: contentPadding,
+                          vertical: contentPadding * 0.75,
+                        ),
+                      ),
+                    )),
                     SizedBox(height: contentPadding),
 
                     // Confirm password field
                     Obx(() => TextFormField(
-                          controller: controller.confirmPasswordController,
-                          obscureText: controller.obscureConfirmPassword.value,
-                          validator: controller.validateConfirmPassword,
-                          style: TextStyle(fontSize: bodyFontSize),
-                          decoration: InputDecoration(
-                            labelText: 'Confirm New Password',
-                            labelStyle: TextStyle(fontSize: bodyFontSize),
-                            prefixIcon: Icon(
-                              Icons.lock_outline,
-                              size: iconSize,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                controller.obscureConfirmPassword.value
-                                    ? Icons.visibility_off_outlined
-                                    : Icons.visibility_outlined,
-                                size: iconSize,
-                              ),
-                              onPressed:
-                                  controller.toggleConfirmPasswordVisibility,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: contentPadding,
-                              vertical: contentPadding * 0.75,
-                            ),
+                      controller: controller.confirmPasswordController,
+                      obscureText: controller.obscureConfirmPassword.value,
+                      validator: controller.validateConfirmPassword,
+                      style: TextStyle(fontSize: bodyFontSize),
+                      decoration: InputDecoration(
+                        labelText: 'Confirm New Password',
+                        labelStyle: TextStyle(fontSize: bodyFontSize),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          size: iconSize,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            controller.obscureConfirmPassword.value
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
+                            size: iconSize,
                           ),
-                        )),
+                          onPressed:
+                          controller.toggleConfirmPasswordVisibility,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: contentPadding,
+                          vertical: contentPadding * 0.75,
+                        ),
+                      ),
+                    )),
                     SizedBox(height: contentPadding * 2),
 
                     // Change password button
-                    Obx(() => SizedBox(
-                          width: double.infinity,
-                          height: buttonHeight,
-                          child: CustomButton(
-                            text: 'Change Password',
-                            onPressed: controller.changePassword,
-                            isLoading: controller.passwordState.value
-                                is PasswordLoadingState,
-                            backgroundColor: AppColors.primary,
-                          ),
-                        )),
+                    SizedBox(
+                      width: double.infinity,
+                      height: buttonHeight,
+                      child: Obx(() => CustomButton(
+                        text: 'Change Password',
+                        onPressed: controller.changePassword,
+                        isLoading: controller.passwordState.value
+                        is PasswordLoadingState,
+                        backgroundColor: AppColors.primary,
+                      )),
+                    ),
 
                     SizedBox(height: contentPadding),
 

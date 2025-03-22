@@ -7,9 +7,12 @@ import '../../values/app_constants.dart';
 import '../models/onboarding_model.dart';
 import '../models/user_model.dart';
 
-
 class LocalStorageProvider extends GetxService {
   late SharedPreferences _prefs;
+
+  // Keys for stored credentials
+  static const String userEmailKey = 'user_email';
+  static const String userPasswordKey = 'user_password';
 
   Future<LocalStorageProvider> init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -92,10 +95,30 @@ class LocalStorageProvider extends GetxService {
     await _prefs.remove(AppConstants.userDataKey);
   }
 
+  // User credentials methods (for internal re-login)
+  Future<void> saveUserCredentials(String email, String password) async {
+    await _prefs.setString(userEmailKey, email);
+    await _prefs.setString(userPasswordKey, password);
+  }
+
+  String? getStoredEmail() {
+    return _prefs.getString(userEmailKey);
+  }
+
+  String? getStoredPassword() {
+    return _prefs.getString(userPasswordKey);
+  }
+
+  Future<void> clearUserCredentials() async {
+    await _prefs.remove(userEmailKey);
+    await _prefs.remove(userPasswordKey);
+  }
+
   // Clear all data (for logout)
   Future<void> clearAll() async {
     await clearToken();
     await clearUser();
+    await clearUserCredentials();
     // Keep onboarding status
   }
 }

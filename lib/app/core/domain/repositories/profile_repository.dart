@@ -1,4 +1,4 @@
-// lib/app/core/domain/repositories/profile_repository.dart (update)
+// lib/app/core/domain/repositories/profile_repository.dart
 import 'dart:io';
 import 'package:get/get.dart';
 
@@ -13,7 +13,7 @@ class ProfileRepository {
   final LocalStorageProvider _localStorageProvider = Get.find<LocalStorageProvider>();
 
   // Update user profile
-  Future<ApiResponse<UserModel>> updateProfile({
+  Future<ApiResponse<bool>> updateProfile({
     String? name,
     String? address,
     File? image,
@@ -56,20 +56,23 @@ class ProfileRepository {
 
       // Check for success response
       if (response.success && response.data != null) {
-        // Parse user data
-        final user = UserModel.fromJson(response.data['user'] ?? {});
+        // Based on the response format: {"type":"success","text":"Profile Updated Successfully"}
+        final type = response.data['type'] as String?;
+        final text = response.data['text'] as String?;
 
-        // Save updated user data
-        await _localStorageProvider.saveUser(user);
-
-        return ApiResponse.success(
-          message: response.message,
-          data: user,
-        );
+        if (type == 'success') {
+          return ApiResponse.success(
+            message: text ?? 'Profile updated successfully',
+            data: true,
+          );
+        }
       }
 
       // Return the error response
-      return response as ApiResponse<UserModel>;
+      return ApiResponse.error(
+        message: response.message,
+        errors: response.errors,
+      );
     } catch (e) {
       return ApiResponse.error(
         message: 'Profile update failed: ${e.toString()}',

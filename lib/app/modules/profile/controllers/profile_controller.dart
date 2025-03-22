@@ -4,62 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../core/domain/repositories/auth_repository.dart';
 import '../../../core/domain/repositories/profile_repository.dart';
 import '../../../core/data/models/user_model.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/state/base_state.dart';
-
-// Profile-specific states
-class ProfileState extends BaseState {
-  const ProfileState();
-}
-
-class ProfileLoadingState extends ProfileState {
-  const ProfileLoadingState();
-}
-
-class ProfileLoadedState extends ProfileState {
-  final UserModel user;
-  const ProfileLoadedState(this.user);
-}
-
-class ProfileUpdateLoadingState extends ProfileState {
-  const ProfileUpdateLoadingState();
-}
-
-class ProfileUpdateSuccessState extends ProfileState {
-  final String message;
-  const ProfileUpdateSuccessState(this.message);
-}
-
-class ProfileUpdateErrorState extends ProfileState {
-  final String message;
-  final List<String>? errors;
-  const ProfileUpdateErrorState({required this.message, this.errors});
-}
-
-class PasswordState extends BaseState {
-  const PasswordState();
-}
-
-class PasswordLoadingState extends PasswordState {
-  const PasswordLoadingState();
-}
-
-class PasswordSuccessState extends PasswordState {
-  final String message;
-  const PasswordSuccessState(this.message);
-}
-
-class PasswordErrorState extends PasswordState {
-  final String message;
-  final List<String>? errors;
-  const PasswordErrorState({required this.message, this.errors});
-}
+import '../../../core/state/profile_state.dart';
 
 class ProfileController extends GetxController {
   final ProfileRepository _profileRepository = Get.find<ProfileRepository>();
+  final AuthRepository _authRepository = Get.find<AuthRepository>();
   final AuthService _authService = Get.find<AuthService>();
 
   // Reactive state variables
@@ -125,17 +79,37 @@ class ProfileController extends GetxController {
 
   // Select profile image
   Future<void> selectProfileImage() async {
-    final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      selectedProfileImage.value = File(image.path);
+    try {
+      final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        selectedProfileImage.value = File(image.path);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to pick image: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.7),
+        colorText: Colors.white,
+      );
     }
   }
 
   // Select cover image
   Future<void> selectCoverImage() async {
-    final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      selectedCoverImage.value = File(image.path);
+    try {
+      final XFile? image = await _imagePicker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        selectedCoverImage.value = File(image.path);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to pick image: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.withOpacity(0.7),
+        colorText: Colors.white,
+      );
     }
   }
 
@@ -152,25 +126,47 @@ class ProfileController extends GetxController {
           coverImage: selectedCoverImage.value,
         );
 
-        if (response.success && response.data != null) {
-          // Update auth service with new user data
-          _authService.updateUser(response.data!);
-          user.value = response.data;
-
+        if (response.success) {
           // Reset selected images
           selectedProfileImage.value = null;
           selectedCoverImage.value = null;
 
-          profileState.value = ProfileUpdateSuccessState(response.message);
+          // Perform internal re-login to refresh user data
+          final refreshResponse = await _authRepository.refreshUserData();
 
-          // Show success message
-          Get.snackbar(
-            'Success',
-            response.message,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.green.withOpacity(0.7),
-            colorText: Colors.white,
-          );
+          if (refreshResponse.success && refreshResponse.data != null) {
+            // Update auth service with fresh user data
+            _authService.updateUser(refreshResponse.data!);
+
+            // Update local user variable
+            user.value = refreshResponse.data;
+
+            // Show success message
+            Get.snackbar(
+              'Success',
+              response.message,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.green.withOpacity(0.7),
+              colorText: Colors.white,
+            );
+
+            profileState.value = ProfileUpdateSuccessState(response.message);
+          } else {
+            // If refresh fails, still mark the update as successful
+            // but log the refresh failure
+            print('Profile updated but failed to refresh user data: ${refreshResponse.message}');
+
+            // Show partial success message
+            Get.snackbar(
+              'Success',
+              'Profile updated successfully, but some changes may require you to log in again to take effect.',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.yellow.withOpacity(0.7),
+              colorText: Colors.black,
+            );
+
+            profileState.value = ProfileUpdateSuccessState(response.message);
+          }
         } else {
           profileState.value = ProfileUpdateErrorState(
             message: response.message,
