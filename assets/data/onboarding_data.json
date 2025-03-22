@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Quick Payments",
+    "description": "You can easily clear payment without having to be complicated and fast.",
+    "image": "assets/images/quick_loan.svg"
+  },
+  {
+    "id": 2,
+    "title": "Secure",
+    "description": "Comes with a layered security, makes it safe without fear.",
+    "image": "assets/images/secure.svg"
+  },
+  {
+    "id": 3,
+    "title": "Easy Access",
+    "description": "Manage your finances anywhere, anytime. Transfer money, pay bills, and monitor your cards with ease.",
+    "image": "assets/images/easy_access.svg"
+  }
+]

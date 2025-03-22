@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background circle -->
+  <circle cx="150" cy="150" r="120" fill="#E8F5E9"/>
+  
+  <!-- Decorative plants on left -->
+  <path d="M90,160 C85,152 78,160 82,168 C85,175 90,172 90,160" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+  <path d="M80,170 C75,162 68,170 72,178 C75,185 80,182 80,170" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+  <path d="M70,180 C65,172 58,180 62,188 C65,195 70,192 70,180" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+  
+  <!-- Decorative plants on right -->
+  <path d="M210,160 C215,152 222,160 218,168 C215,175 210,172 210,160" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+  <path d="M220,170 C225,162 232,170 228,178 C225,185 220,182 220,170" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+  <path d="M230,180 C235,172 242,180 238,188 C235,195 230,192 230,180" fill="none" stroke="#2E7D32" stroke-width="1.5"/>
+  
+  <!-- Key on top -->
+  <g transform="translate(150, 80)">
+    <circle cx="0" cy="0" r="10" fill="#555555" stroke="#333333" stroke-width="1"/>
+    <path d="M8,0 L25,0 Q30,0 30,5 L30,10 Q30,15 25,15 L20,15" fill="none" stroke="#333333" stroke-width="3"/>
+    <path d="M20,8 L20,15 L25,15" fill="none" stroke="#333333" stroke-width="3"/>
+    <path d="M0,10 L0,30" stroke="#333333" stroke-width="3" fill="none"/>
+  </g>
+  
+  <!-- Credit Card -->
+  <rect x="90" y="130" width="120" height="75" rx="8" fill="#111111"/>
+  <rect x="90" y="150" width="120" height="25" fill="#00C853"/>
+  <rect x="110" y="130" width="15" height="15" rx="2" fill="#FFFFFF" opacity="0.9"/>
+  <text x="125" y="145" fill="#FFFFFF" font-family="Arial" font-size="8" font-weight="bold">CREDIT CARD</text>
+  <text x="110" y="190" fill="#FFFFFF" font-family="Arial" font-size="10">0000 0000 0000 0000</text>
+  <circle cx="190" cy="190" r="10" fill="#FFFFFF" opacity="0.8"/>
+  
+  <!-- Dollar coins -->
+  <circle cx="120" cy="210" r="15" fill="#333333" stroke="#222222" stroke-width="1"/>
+  <text x="120" y="215" fill="#FFFFFF" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle">$</text>
+  
+  <circle cx="150" cy="220" r="15" fill="#333333" stroke="#222222" stroke-width="1"/>
+  <text x="150" y="225" fill="#FFFFFF" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle">$</text>
+  
+  <circle cx="180" cy="210" r="15" fill="#333333" stroke="#222222" stroke-width="1"/>
+  <text x="180" y="215" fill="#FFFFFF" font-family="Arial" font-size="18" font-weight="bold" text-anchor="middle">$</text>
+  
+  <!-- Dollar bills -->
+  <rect x="90" y="205" width="60" height="15" fill="#E0E0E0"/>
+  <rect x="90" y="210" width="60" height="15" fill="#E0E0E0"/>
+  <rect x="90" y="215" width="60" height="15" fill="#E0E0E0"/>
+  <rect x="95" y="209" width="40" height="2" fill="#AAAAAA"/>
+  <rect x="95" y="214" width="40" height="2" fill="#AAAAAA"/>
+  <rect x="95" y="219" width="40" height="2" fill="#AAAAAA"/>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background circle -->
+  <circle cx="150" cy="150" r="120" fill="#E8F5E9"/>
+  
+  <!-- Wallet -->
+  <rect x="70" y="130" width="80" height="65" rx="5" fill="#00C853"/>
+  <rect x="70" y="130" width="80" height="15" rx="2" fill="#2E7D32"/>
+  
+  <!-- Wallet pocket -->
+  <rect x="75" y="150" width="70" height="40" rx="3" fill="#006128"/>
+  <rect x="85" y="155" width="10" height="10" rx="5" fill="#004d1f"/>
+  
+  <!-- Wallet strap -->
+  <rect x="85" y="125" width="10" height="12" rx="2" fill="#006128"/>
+  
+  <!-- Credit Card -->
+  <g transform="translate(130, 105) rotate(15)">
+    <rect width="80" height="50" rx="5" fill="#00C853"/>
+    <rect x="5" y="10" width="15" height="15" rx="2" fill="#FFFFFF"/>
+    <rect x="10" y="15" width="5" height="5" rx="1" fill="#006128"/>
+    <!-- Card details -->
+    <rect x="5" y="30" width="70" height="3" fill="#006128"/>
+    <rect x="5" y="36" width="70" height="3" fill="#006128"/>
+    <rect x="5" y="42" width="40" height="3" fill="#006128"/>
+  </g>
+  
+  <!-- Left Hand -->
+  <path d="M60,150 C50,155 45,140 50,130 C55,120 65,125 63,135 L62,145" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M70,190 C60,195 50,175 45,165 C40,155 50,145 55,155 L65,165" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M80,195 C70,200 65,180 60,170 C55,160 65,150 70,160 L75,170" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M90,195 C80,200 75,180 70,170 C65,160 75,150 80,160 L85,170" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M100,190 C90,195 85,175 80,165 C75,155 85,145 90,155 L95,165" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  
+  <!-- Right Hand -->
+  <path d="M170,150 C180,155 185,140 180,130 C175,120 165,125 167,135 L168,145" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M175,190 C185,195 195,175 200,165 C205,155 195,145 190,155 L180,165" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M165,195 C175,200 180,180 185,170 C190,160 180,150 175,160 L170,170" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M155,195 C165,200 170,180 175,170 C180,160 170,150 165,160 L160,170" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M145,190 C155,195 160,175 165,165 C170,155 160,145 155,155 L150,165" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+</svg>

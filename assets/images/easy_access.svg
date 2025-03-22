@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <!-- Background circle -->
+  <circle cx="150" cy="150" r="120" fill="#E8F5E9"/>
+  
+  <!-- Left Document with chart -->
+  <rect x="90" y="90" width="75" height="95" rx="2" fill="#FFFFFF" stroke="#DDDDDD" stroke-width="1"/>
+  
+  <!-- Document Header Lines -->
+  <line x1="100" y1="105" x2="155" y2="105" stroke="#BBBBBB" stroke-width="2"/>
+  <line x1="100" y1="115" x2="145" y2="115" stroke="#BBBBBB" stroke-width="1"/>
+  <line x1="100" y1="125" x2="140" y2="125" stroke="#BBBBBB" stroke-width="1"/>
+  
+  <!-- Line Chart -->
+  <rect x="100" y="135" width="55" height="30" fill="#F5F5F5" stroke="#DDDDDD" stroke-width="1"/>
+  <polyline points="105,155 115,150 125,152 135,145 145,140 150,142" fill="none" stroke="#00C853" stroke-width="2"/>
+  <line x1="105" y1="165" x2="155" y2="165" stroke="#BBBBBB" stroke-width="1"/>
+  <line x1="105" y1="135" x2="105" y2="165" stroke="#BBBBBB" stroke-width="1"/>
+  
+  <!-- Document Lines -->
+  <line x1="100" y1="175" x2="150" y2="175" stroke="#BBBBBB" stroke-width="1"/>
+  <polyline points="150,175 155,175 155,170" stroke="#00C853" stroke-width="2"/>
+  
+  <!-- Right Document with pie chart -->
+  <rect x="140" y="110" width="75" height="95" rx="2" fill="#FFFFFF" stroke="#DDDDDD" stroke-width="1"/>
+  
+  <!-- Document Header -->
+  <line x1="150" y1="125" x2="205" y2="125" stroke="#BBBBBB" stroke-width="2"/>
+  <line x1="150" y1="135" x2="195" y2="135" stroke="#BBBBBB" stroke-width="1"/>
+  
+  <!-- Pie Chart -->
+  <circle cx="175" cy="155" r="15" fill="none" stroke="#DDDDDD" stroke-width="1"/>
+  <path d="M175,155 L175,140 A15,15 0 0,1 190,155 Z" fill="#00C853"/>
+  <path d="M175,155 L190,155 A15,15 0 0,1 175,170 Z" fill="#AAAAAA"/>
+  <path d="M175,155 L175,170 A15,15 0 0,1 160,155 Z" fill="#DDDDDD"/>
+  <path d="M175,155 L160,155 A15,15 0 0,1 175,140 Z" fill="#88DD88"/>
+  
+  <!-- Document Lines -->
+  <line x1="150" y1="180" x2="205" y2="180" stroke="#BBBBBB" stroke-width="1"/>
+  <line x1="150" y1="190" x2="200" y2="190" stroke="#BBBBBB" stroke-width="1"/>
+  <line x1="150" y1="200" x2="190" y2="200" stroke="#BBBBBB" stroke-width="1"/>
+  
+  <!-- Control Icons -->
+  <rect x="205" y="125" width="15" height="15" rx="2" fill="#E8F5E9" stroke="#DDDDDD" stroke-width="1"/>
+  <text x="212" y="137" fill="#00C853" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">+</text>
+  
+  <rect x="205" y="195" width="15" height="15" rx="2" fill="#E8F5E9" stroke="#DDDDDD" stroke-width="1"/>
+  <text x="212" y="207" fill="#00C853" font-family="Arial" font-size="12" font-weight="bold" text-anchor="middle">-</text>
+  
+  <!-- Left Hand -->
+  <path d="M110,170 C100,175 95,160 100,150 C105,140 115,145 113,155 L112,165" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M120,200 C110,205 100,185 95,175 C90,165 100,155 105,165 L115,175" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M130,200 C120,205 115,185 110,175 C105,165 115,155 120,165 L125,175" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  
+  <!-- Right Hand -->
+  <path d="M190,170 C200,175 205,160 200,150 C195,140 185,145 187,155 L188,165" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M180,200 C190,205 200,185 205,175 C210,165 200,155 195,165 L185,175" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  <path d="M170,200 C180,205 185,185 190,175 C195,165 185,155 180,165 L175,175" fill="#FFFFFF" stroke="#333333" stroke-width="1"/>
+  
+  <!-- Coins at bottom -->
+  <circle cx="130" cy="225" r="12" fill="#00C853"/>
+  <text x="130" y="230" fill="#FFFFFF" font-family="Arial" font-size="14" font-weight="bold" text-anchor="middle">$</text>
+  
+  <circle cx="160" cy="225" r="12" fill="#00C853"/>
+  <circle cx="160" cy="225" r="6" fill="#006128"/>
+  
+  <circle cx="190" cy="225" r="12" fill="#00C853"/>
+  <path d="M185,225 L195,225 M190,220 L190,230" stroke="#006128" stroke-width="2"/>
+</svg>
