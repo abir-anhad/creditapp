@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/values/api_constants.dart';
 import '../controllers/profile_controller.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -52,7 +53,7 @@ class ProfileView extends GetView<ProfileController> {
                       // Cover image
                       if (currentUser?.coverImage != null && currentUser!.coverImage!.isNotEmpty)
                         Image.network(
-                          currentUser.coverImage!,
+                         '${ApiConstants.staticUrl}${currentUser.coverImage!}',
                           width: double.infinity,
                           height: coverHeight,
                           fit: BoxFit.cover,
@@ -127,7 +128,7 @@ class ProfileView extends GetView<ProfileController> {
                             ],
                             image: currentUser?.image != null && currentUser!.image!.isNotEmpty
                                 ? DecorationImage(
-                              image: NetworkImage(currentUser.image!),
+                              image: NetworkImage('${ApiConstants.staticUrl}${currentUser.image!}'),
                               fit: BoxFit.cover,
                             )
                                 : null,
@@ -280,7 +281,48 @@ class ProfileView extends GetView<ProfileController> {
                               ),
                             ),
                             SizedBox(height: contentPadding * 1.5),
-
+                            TextFormField(
+                              controller: controller.emailController,
+                              validator: controller.validateEmail,
+                              style: TextStyle(fontSize: bodyFontSize),
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                labelStyle: TextStyle(fontSize: bodyFontSize),
+                                prefixIcon: Icon(
+                                  Icons.location_on_outlined,
+                                  size: iconSize * 0.8,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: contentPadding,
+                                  vertical: contentPadding * 0.75,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: contentPadding * 1.5),
+                            TextFormField(
+                              controller: controller.phoneController,
+                              validator: controller.validatePhone,
+                              style: TextStyle(fontSize: bodyFontSize),
+                              decoration: InputDecoration(
+                                labelText: 'Phone',
+                                labelStyle: TextStyle(fontSize: bodyFontSize),
+                                prefixIcon: Icon(
+                                  Icons.location_on_outlined,
+                                  size: iconSize * 0.8,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: contentPadding,
+                                  vertical: contentPadding * 0.75,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: contentPadding * 1.5),
                             // Show selected images preview if available
                             if (controller.selectedProfileImage.value != null || controller.selectedCoverImage.value != null)
                               Padding(

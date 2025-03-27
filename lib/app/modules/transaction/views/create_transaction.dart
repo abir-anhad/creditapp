@@ -199,13 +199,72 @@ class CreateTransactionView extends GetView<TransactionController> {
               SizedBox(height: padding * 1.5),
 
               // Submit button
+              // SizedBox(
+              //   width: double.infinity,
+              //   height: buttonHeight,
+              //   child: Obx(() => ElevatedButton(
+              //     onPressed: controller.isCreatingTransaction.value
+              //         ? null
+              //         : () => controller.createTransaction(),
+              //     style: ElevatedButton.styleFrom(
+              //       backgroundColor: AppColors.primary,
+              //       foregroundColor: Colors.white,
+              //       disabledBackgroundColor: Colors.grey,
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(12),
+              //       ),
+              //     ),
+              //     child: controller.isCreatingTransaction.value
+              //         ? SizedBox(
+              //       width: buttonHeight * 0.5,
+              //       height: buttonHeight * 0.5,
+              //       child: const CircularProgressIndicator(
+              //         strokeWidth: 2,
+              //         color: Colors.white,
+              //       ),
+              //     )
+              //         : Text(
+              //       'Create Transaction',
+              //       style: TextStyle(
+              //         fontSize: fontSize * 1.1,
+              //         fontWeight: FontWeight.bold,
+              //       ),
+              //     ),
+              //   )),
+              // ),
               SizedBox(
                 width: double.infinity,
                 height: buttonHeight,
                 child: Obx(() => ElevatedButton(
                   onPressed: controller.isCreatingTransaction.value
-                      ? null
-                      : () => controller.createTransaction(),
+                      ? null // Disable button when transaction is in progress
+                      : () async {
+                    // Show confirmation dialog
+                    bool? confirmed = await showDialog<bool>(
+                      context: Get.context!, // Assumes you're using GetX for context
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirm Transaction'),
+                          content: const Text('Are you sure you want to create this transaction?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false), // Cancel
+                              child: const Text('No'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true), // Confirm
+                              child: const Text('Yes'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    // If user confirmed, call createTransaction
+                    if (confirmed == true) {
+                      controller.createTransaction();
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -267,12 +326,73 @@ class CreateTransactionView extends GetView<TransactionController> {
     );
   }
 
+  // Widget _buildShopDropdown(double fontSize, double labelSize, double padding) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       DropdownButtonFormField<ShopModel>(
+  //         value: controller.selectedShop.value,
+  //         decoration: InputDecoration(
+  //           labelText: 'Shop',
+  //           labelStyle: TextStyle(fontSize: labelSize),
+  //           border: OutlineInputBorder(
+  //             borderRadius: BorderRadius.circular(12),
+  //           ),
+  //           contentPadding: EdgeInsets.symmetric(horizontal: padding, vertical: padding),
+  //         ),
+  //         style: TextStyle(fontSize: fontSize, color: Colors.black87),
+  //         validator: (value) => controller.validateShopId(value?.id.toString()),
+  //         items: controller.shopList.map((shop) {
+  //           return DropdownMenuItem<ShopModel>(
+  //             value: shop,
+  //             child: Text(
+  //               shop.shopName ?? 'Unknown Shop',
+  //               style: TextStyle(fontSize: fontSize),
+  //             ),
+  //           );
+  //         }).toList(),
+  //         onChanged: controller.onShopSelected,
+  //         isExpanded: true,
+  //         itemHeight: 60,
+  //         dropdownColor: Colors.white,
+  //       ),
+  //       if (controller.isLoadingShops.value)
+  //         Padding(
+  //           padding: EdgeInsets.only(top: padding * 0.5),
+  //           child: Row(
+  //             children: [
+  //               SizedBox(
+  //                 width: fontSize,
+  //                 height: fontSize,
+  //                 child: const CircularProgressIndicator(
+  //                   strokeWidth: 2,
+  //                   color: AppColors.primary,
+  //                 ),
+  //               ),
+  //               SizedBox(width: padding * 0.5),
+  //               Text(
+  //                 'Loading shops...',
+  //                 style: TextStyle(
+  //                   fontSize: fontSize * 0.9,
+  //                   color: Colors.grey,
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //     ],
+  //   );
+  // }
+
   Widget _buildShopDropdown(double fontSize, double labelSize, double padding) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DropdownButtonFormField<ShopModel>(
-          value: controller.selectedShop.value,
+        TextFormField(
+          controller: TextEditingController(
+            text: controller.selectedShop.value?.shopName ?? 'No Shop Selected',
+          ),
+          readOnly: true, // Makes it non-editable
           decoration: InputDecoration(
             labelText: 'Shop',
             labelStyle: TextStyle(fontSize: labelSize),
@@ -282,20 +402,7 @@ class CreateTransactionView extends GetView<TransactionController> {
             contentPadding: EdgeInsets.symmetric(horizontal: padding, vertical: padding),
           ),
           style: TextStyle(fontSize: fontSize, color: Colors.black87),
-          validator: (value) => controller.validateShopId(value?.id.toString()),
-          items: controller.shopList.map((shop) {
-            return DropdownMenuItem<ShopModel>(
-              value: shop,
-              child: Text(
-                shop.shopName ?? 'Unknown Shop',
-                style: TextStyle(fontSize: fontSize),
-              ),
-            );
-          }).toList(),
-          onChanged: controller.onShopSelected,
-          isExpanded: true,
-          itemHeight: 60,
-          dropdownColor: Colors.white,
+          validator: (value) => controller.validateShopId(controller.selectedShop.value?.id.toString()),
         ),
         if (controller.isLoadingShops.value)
           Padding(

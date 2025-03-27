@@ -1,6 +1,8 @@
+import 'package:credit_app/app/core/widgets/loading_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'app/core/controllers/loading_controller.dart';
 import 'app/core/data/providers/api_provider.dart';
 import 'app/core/data/providers/local_storage_provider.dart';
 import 'app/core/domain/repositories/auth_repository.dart';
@@ -8,6 +10,7 @@ import 'app/core/domain/repositories/onboarding_repository.dart';
 import 'app/core/domain/repositories/profile_repository.dart';
 import 'app/core/domain/repositories/shop_repository.dart';
 import 'app/core/domain/repositories/transaction_repository.dart';
+import 'app/core/domain/repositories/users_list_repository.dart';
 import 'app/core/theme/app_theme.dart';
 import 'app/core/services/auth_service.dart';
 import 'app/routes/app_pages.dart';
@@ -29,10 +32,12 @@ void main() async {
     ),
   );
 
+  Get.put(LoadingController(), permanent: true);
+
   // Initialize services
   await initServices();
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 Future<void> initServices() async {
@@ -46,13 +51,15 @@ Future<void> initServices() async {
   Get.put(ProfileRepository());
   Get.put(TransactionRepository());
   Get.put(ShopRepository());
+  Get.put(UserRepository());
 
   // Initialize services
   await Get.putAsync(() => AuthService().init());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final loadingController = Get.find<LoadingController>();
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +70,7 @@ class MyApp extends StatelessWidget {
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.routes,
       defaultTransition: Transition.fade,
+
     );
   }
 }

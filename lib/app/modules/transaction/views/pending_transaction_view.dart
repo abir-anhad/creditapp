@@ -24,41 +24,43 @@ class PendingTransactionsView extends GetView<TransactionController> {
     final iconSize = isTablet ? 28.0 : 20.0;
     final cardPadding = isTablet ? 20.0 : 15.0;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: RefreshIndicator(
-        onRefresh: () async {
-          await controller.fetchPendingTransactions();
-        },
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with user info
-              Container(
-                margin: EdgeInsets.fromLTRB(0, screenHeight * 0.04, 0, 0),
-                child: _buildHeader(statusBarHeight, titleFontSize, contentPadding),
-              ),
-
-              // Transactions list
-              _buildTransactionsList(
-                screenWidth,
-                bodyFontSize,
-                smallFontSize,
-                iconSize,
-                cardPadding,
-                contentPadding,
-                isTablet,
-              ),
-
-              // Bottom spacing
-              SizedBox(height: screenHeight * 0.1),
-            ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.grey[100],
+        body: RefreshIndicator(
+          onRefresh: () async {
+            await controller.fetchPendingTransactions();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header with user info
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, screenHeight * 0.02),
+                  child: _buildHeader(statusBarHeight, titleFontSize, contentPadding),
+                ),
+      
+                // Transactions list
+                _buildTransactionsList(
+                  screenWidth,
+                  bodyFontSize,
+                  smallFontSize,
+                  iconSize,
+                  cardPadding,
+                  contentPadding,
+                  isTablet,
+                ),
+      
+                // Bottom spacing
+                SizedBox(height: screenHeight * 0.1),
+              ],
+            ),
           ),
         ),
+        bottomNavigationBar: _buildBottomNavBar(bodyFontSize, iconSize),
       ),
-      bottomNavigationBar: _buildBottomNavBar(bodyFontSize, iconSize),
     );
   }
 
@@ -76,14 +78,14 @@ class PendingTransactionsView extends GetView<TransactionController> {
               color: Colors.black,
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.filter_list,
-              color: Colors.black87,
-              size: fontSize * 0.8,
-            ),
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: Icon(
+          //     Icons.filter_list,
+          //     color: Colors.black87,
+          //     size: fontSize * 0.8,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -99,7 +101,7 @@ class PendingTransactionsView extends GetView<TransactionController> {
       bool isTablet,
       ) {
     return Obx(() {
-      if (controller.isLoadingPendingTransactions.value) {
+      if (controller.isLoadingPendingTransactions.value && controller.pendingTransactions.isEmpty) {
         return Center(
           child: Padding(
             padding: EdgeInsets.all(contentPadding),
@@ -108,7 +110,7 @@ class PendingTransactionsView extends GetView<TransactionController> {
         );
       }
 
-      if (controller.pendingTransactions.isEmpty) {
+      if (controller.pendingTransactions.isEmpty && !controller.isLoadingPendingTransactions.value) {
         return Center(
           child: Padding(
             padding: EdgeInsets.all(contentPadding),
@@ -156,47 +158,82 @@ class PendingTransactionsView extends GetView<TransactionController> {
       }
 
       // Create responsive grid or list based on screen width
-      return isTablet
-          ? GridView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        padding: EdgeInsets.symmetric(horizontal: contentPadding),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 1.5,
-          crossAxisSpacing: contentPadding * 0.5,
-          mainAxisSpacing: contentPadding * 0.5,
+      return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+              !controller.isLoadingMorePendingTransactions.value &&
+              controller.pendingHasMorePages.value) {
+            controller.loadMorePendingTransactions();
+          }
+          return true;
+        },
+        child: isTablet
+            ? GridView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          padding: EdgeInsets.symmetric(horizontal: contentPadding),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.5,
+            crossAxisSpacing: contentPadding * 0.5,
+            mainAxisSpacing: contentPadding * 0.5,
+          ),
+          itemCount: controller.pendingTransactions.length + (controller.pendingHasMorePages.value ? 1 : 0),
+          itemBuilder: (context, index) {
+            // If we're at the end and have more pages, show loader
+            if (index == controller.pendingTransactions.length) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(contentPadding * 0.5),
+                  child: controller.isLoadingMorePendingTransactions.value
+                      ? const CircularProgressIndicator()
+                      : const SizedBox.shrink(),
+                ),
+              );
+            }
+
+            final transaction = controller.pendingTransactions[index];
+            return _buildTransactionCard(
+              transaction,
+              fontSize,
+              smallFontSize,
+              iconSize,
+              cardPadding,
+            );
+          },
+        )
+            : ListView.builder(
+          physics: const NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          padding: EdgeInsets.symmetric(horizontal: contentPadding),
+          itemCount: controller.pendingTransactions.length + (controller.pendingHasMorePages.value ? 1 : 0),
+          itemBuilder: (context, index) {
+            // If we're at the end and have more pages, show loader
+            if (index == controller.pendingTransactions.length) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(contentPadding * 0.5),
+                  child: controller.isLoadingMorePendingTransactions.value
+                      ? const CircularProgressIndicator()
+                      : const SizedBox.shrink(),
+                ),
+              );
+            }
+
+            final transaction = controller.pendingTransactions[index];
+            return _buildTransactionCard(
+              transaction,
+              fontSize,
+              smallFontSize,
+              iconSize,
+              cardPadding,
+            );
+          },
         ),
-        itemCount: controller.pendingTransactions.length,
-        itemBuilder: (context, index) {
-          final transaction = controller.pendingTransactions[index];
-          return _buildTransactionCard(
-            transaction,
-            fontSize,
-            smallFontSize,
-            iconSize,
-            cardPadding,
-          );
-        },
-      )
-          : ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        padding: EdgeInsets.symmetric(horizontal: contentPadding),
-        itemCount: controller.pendingTransactions.length,
-        itemBuilder: (context, index) {
-          final transaction = controller.pendingTransactions[index];
-          return _buildTransactionCard(
-            transaction,
-            fontSize,
-            smallFontSize,
-            iconSize,
-            cardPadding,
-          );
-        },
       );
     });
   }
+
 
   Widget _buildTransactionCard(
       transaction,

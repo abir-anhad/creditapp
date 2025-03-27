@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:credit_app/app/modules/home/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -49,6 +51,16 @@ class TransactionController extends GetxController {
   final Rx<double> totalApprovedAmount = 0.0.obs;
   final RxString nextPaymentDate = 'None'.obs;
   final RxString lastApprovalDate = 'None'.obs;
+
+  // Pagination for pending transactions
+  final RxInt pendingCurrentPage = 1.obs;
+  final RxBool pendingHasMorePages = true.obs;
+  final RxBool isLoadingMorePendingTransactions = false.obs;
+
+  // Pagination for approved transactions
+  final RxInt approvedCurrentPage = 1.obs;
+  final RxBool approvedHasMorePages = true.obs;
+  final RxBool isLoadingMoreApprovedTransactions = false.obs;
 
   @override
   void onInit() {
@@ -123,10 +135,10 @@ class TransactionController extends GetxController {
         shopList.assignAll(response.data as Iterable<ShopModel>);
 
         // Select first shop by default if available
-        if (shopList.isNotEmpty) {
-          selectedShop.value = shopList.first;
-          shopIdController.text = shopList.first.id.toString();
-        }
+        // if (shopList.isNotEmpty) {
+        //   selectedShop.value = shopList.first;
+        //   shopIdController.text = shopList.first.id.toString();
+        // }
       } else {
         errorMessage.value = response.message;
       }
@@ -183,9 +195,9 @@ class TransactionController extends GetxController {
 
 
           // Refresh lists
-          HomeController homeController = Get.find<HomeController>();
-          homeController.fetchPendingTransactions();
-          fetchPendingTransactions();
+          // HomeController homeController = Get.find<HomeController>();
+          // homeController.fetchPendingTransactions();
+          // fetchPendingTransactions();
 
           // Show success message
           Get.snackbar(
@@ -221,15 +233,39 @@ class TransactionController extends GetxController {
   }
 
   // Fetch pending transactions
-  Future<void> fetchPendingTransactions({String? date}) async {
-    isLoadingPendingTransactions.value = true;
+  Future<void> fetchPendingTransactions({String? date, bool refresh = false}) async {
+    if (refresh) {
+      // Reset pagination if refreshing
+      pendingCurrentPage.value = 1;
+      pendingTransactions.clear();
+      pendingHasMorePages.value = true;
+      isLoadingPendingTransactions.value = true;
+    } else {
+      // Don't fetch more if we're at the end and not refreshing
+      if (!pendingHasMorePages.value) {
+        return;
+      }
+      isLoadingMorePendingTransactions.value = true;
+    }
+
     errorMessage.value = '';
 
     try {
-      final response = await _transactionRepository.getPendingTransactions(date: date);
+      final response = await _transactionRepository.getPendingTransactions(
+          date: date,
+          page: pendingCurrentPage.value,
+      );
 
       if (response.success && response.data != null) {
-        pendingTransactions.assignAll(response.data!.transactions);
+        if (response.data!.transactions.isNotEmpty) {
+          // Add transactions to the list
+          pendingTransactions.addAll(response.data!.transactions);
+          pendingCurrentPage.value++;
+        } else {
+          // No more pages
+          pendingHasMorePages.value = false;
+        }
+
         _updateComputedValues();
       } else {
         errorMessage.value = response.message;
@@ -238,19 +274,55 @@ class TransactionController extends GetxController {
       errorMessage.value = 'Failed to load pending transactions: ${e.toString()}';
     } finally {
       isLoadingPendingTransactions.value = false;
+      isLoadingMorePendingTransactions.value = false;
     }
   }
 
+  Future<void> loadMorePendingTransactions({String? date}) async {
+    if (!isLoadingMorePendingTransactions.value && pendingHasMorePages.value) {
+      await fetchPendingTransactions(date: date);
+    }
+  }
+
+
   // Fetch approved transactions
-  Future<void> fetchApprovedTransactions({String? date}) async {
-    isLoadingApprovedTransactions.value = true;
+  Future<void> fetchApprovedTransactions({String? date, bool refresh = false, int? page}) async {
+    if (refresh) {
+      // Reset pagination if refreshing
+      approvedCurrentPage.value = 1;
+      approvedTransactions.clear();
+      approvedHasMorePages.value = true;
+      isLoadingApprovedTransactions.value = true;
+    } else {
+      // Don't fetch more if we're at the end and not refreshing
+      if (!approvedHasMorePages.value) {
+        return;
+      }
+      isLoadingMoreApprovedTransactions.value = true;
+    }
+
     errorMessage.value = '';
 
     try {
-      final response = await _transactionRepository.getApprovedTransactions(date: date);
+      final response = await _transactionRepository.getApprovedTransactions(
+          date: date,
+          page: page ?? approvedCurrentPage.value
+      );
 
       if (response.success && response.data != null) {
-        approvedTransactions.assignAll(response.data!.transactions);
+        if (response.data!.transactions.isNotEmpty) {
+          // Add transactions to the list if not refreshing, or replace if refreshing
+          if (refresh) {
+            approvedTransactions.assignAll(response.data!.transactions);
+          } else {
+            approvedTransactions.addAll(response.data!.transactions);
+          }
+          approvedCurrentPage.value++;
+        } else {
+          // No more pages
+          approvedHasMorePages.value = false;
+        }
+
         _updateComputedValues();
       } else {
         errorMessage.value = response.message;
@@ -259,6 +331,14 @@ class TransactionController extends GetxController {
       errorMessage.value = 'Failed to load approved transactions: ${e.toString()}';
     } finally {
       isLoadingApprovedTransactions.value = false;
+      isLoadingMoreApprovedTransactions.value = false;
+    }
+  }
+
+// Add this helper method to load more transactions
+  Future<void> loadMoreApprovedTransactions({String? date}) async {
+    if (!isLoadingMoreApprovedTransactions.value && approvedHasMorePages.value) {
+      await fetchApprovedTransactions(date: date);
     }
   }
 
@@ -355,12 +435,39 @@ class TransactionController extends GetxController {
     Get.toNamed(Routes.TRANSACTION_DETAILS, arguments: {'isPending': isPending});
   }
 
+  // void navigateToPendingTransactions() {
+  //   // Refresh the pending transactions list before navigation
+  //   fetchPendingTransactions(refresh: true).then((_) {
+  //     Get.toNamed(Routes.PENDING_TRANSACTIONS);
+  //   });
+  // }
   void navigateToPendingTransactions() {
     Get.toNamed(Routes.PENDING_TRANSACTIONS);
+    unawaited(fetchPendingTransactions(refresh: true)); // Non-blocking call
   }
 
   void navigateToApprovedTransactions() {
+    // Refresh the approved transactions list before navigation
+    // fetchApprovedTransactions(refresh: true).then((_) {
+    //   Get.toNamed(Routes.APPROVED_TRANSACTIONS);
+    // });
+
     Get.toNamed(Routes.APPROVED_TRANSACTIONS);
+    unawaited( fetchApprovedTransactions(refresh: true));
+  }
+
+  void ensurePendingTransactionsLoaded() {
+    // Only refresh if the list is empty or you want to always get fresh data
+    if (pendingTransactions.isEmpty || pendingCurrentPage.value == 1) {
+      fetchPendingTransactions(refresh: true);
+    }
+  }
+
+  void ensureApprovedTransactionsLoaded() {
+    // Only refresh if the list is empty or you want to always get fresh data
+    if (approvedTransactions.isEmpty || approvedCurrentPage.value == 1) {
+      fetchApprovedTransactions(refresh: true);
+    }
   }
 
   void navigateToHome() {

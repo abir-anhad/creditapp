@@ -16,6 +16,8 @@ class ProfileRepository {
   Future<ApiResponse<bool>> updateProfile({
     String? name,
     String? address,
+    String? email,
+    String? phone,
     File? image,
     File? coverImage,
   }) async {
@@ -29,6 +31,14 @@ class ProfileRepository {
 
       if (address != null && address.isNotEmpty) {
         formData['address'] = address;
+      }
+
+      if (email != null && email.isNotEmpty) {
+        formData['email'] = email;
+      }
+
+      if (phone != null && phone.isNotEmpty) {
+        formData['phone'] = phone;
       }
 
       // Add image if provided

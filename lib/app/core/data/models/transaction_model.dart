@@ -50,7 +50,7 @@ class TransactionDetail {
   factory TransactionDetail.fromJson(Map<String, dynamic> json) {
     return TransactionDetail(
       transactionType: json['transaction_type'] ?? '',
-      amount: json['amount'] ?? '',
+      amount: '${json['amount']}' ?? '',
       date: json['date'] ?? '',
       description: json['description'] ?? '',
       ownerName: json['owner_name'] ?? '',

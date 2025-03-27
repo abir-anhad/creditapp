@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 // Modules
+import '../core/middlewares/loading_middleware.dart';
 import '../modules/auth/bindings/auth_binding.dart';
 import '../modules/auth/middlewares/auth_middleware.dart';
 import '../modules/auth/views/login_view.dart';
@@ -93,21 +94,25 @@ class AppPages {
     GetPage(
       name: Routes.CREATE_TRANSACTION,
       page: () => const CreateTransactionView(),
+      // middlewares: [LoadingMiddleware()],
       // binding: TransactionBinding(),
     ),
     GetPage(
       name: Routes.PENDING_TRANSACTIONS,
       page: () => const PendingTransactionsView(),
+      // middlewares: [LoadingMiddleware()],
       // binding: TransactionBinding(),
     ),
     GetPage(
       name: Routes.APPROVED_TRANSACTIONS,
       page: () => const ApprovedTransactionsView(),
+      // middlewares: [LoadingMiddleware()],
       // binding: TransactionBinding(),
     ),
     GetPage(
       name: Routes.TRANSACTION_DETAILS,
       page: () => const TransactionDetailView(),
+      // middlewares: [LoadingMiddleware()],
       // binding: TransactionBinding(),
     ),
   ];

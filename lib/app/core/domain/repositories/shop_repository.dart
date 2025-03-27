@@ -43,4 +43,45 @@ class ShopRepository {
       );
     }
   }
+
+  Future<ApiResponse<List<ShopModel>>> getShopByUser(String userId, String currentRole) async {
+    try {
+
+
+      final formData = {
+        'user_id': userId,
+        'role': currentRole,
+      };
+      // Send shop list request
+      final response = await _apiProvider.postFormData(
+        ApiConstants.shopByUser,
+        formData: formData,
+      );
+
+      if (response.success && response.data != null) {
+        final shopResponse = ShopListResponse.fromJson(response.data);
+
+        // Check if type is success
+        if (shopResponse.type == 'success') {
+          return ApiResponse.success(
+            message: shopResponse.text,
+            data: shopResponse.shops,
+          );
+        } else {
+          return ApiResponse.error(
+            message: shopResponse.text,
+          );
+        }
+      }
+
+      return ApiResponse.error(
+        message: response.message,
+        errors: response.errors,
+      );
+    } catch (e) {
+      return ApiResponse.error(
+        message: 'Failed to fetch shops: ${e.toString()}',
+      );
+    }
+  }
 }

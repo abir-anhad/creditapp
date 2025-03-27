@@ -30,6 +30,8 @@ class ProfileController extends GetxController {
   // Profile form fields
   final TextEditingController nameController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
   // Password form fields
   final TextEditingController oldPasswordController = TextEditingController();
@@ -68,6 +70,8 @@ class ProfileController extends GetxController {
       user.value = currentUser;
       nameController.text = currentUser.name ?? '';
       addressController.text = currentUser.address ?? '';
+      emailController.text = currentUser.email ?? '';
+      phoneController.text = currentUser.phone ?? '';
       profileState.value = ProfileLoadedState(currentUser);
     }
   }
@@ -122,6 +126,8 @@ class ProfileController extends GetxController {
         final response = await _profileRepository.updateProfile(
           name: nameController.text.trim(),
           address: addressController.text.trim(),
+          email: emailController.text.trim(),
+          phone: phoneController.text.trim(),
           image: selectedProfileImage.value,
           coverImage: selectedCoverImage.value,
         );
@@ -271,6 +277,14 @@ class ProfileController extends GetxController {
   // Validation methods
   String? validateName(String? value) {
     return Validators.required(value, 'Name');
+  }
+
+  String? validateEmail(String? value) {
+    return Validators.required(value, 'Email');
+  }
+
+  String? validatePhone(String? value) {
+    return Validators.required(value, 'Phone');
   }
 
   String? validateAddress(String? value) {

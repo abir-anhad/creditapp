@@ -73,3 +73,25 @@ class UserModel {
     );
   }
 }
+
+class UserListResponse {
+  final String type;
+  final String text;
+  final List<UserModel> userlist;
+
+  UserListResponse({
+    required this.type,
+    required this.text,
+    required this.userlist,
+  });
+
+  factory UserListResponse.fromJson(Map<String, dynamic> json) {
+    return UserListResponse(
+      type: json['type'],
+      text: json['text'],
+      userlist: List<UserModel>.from(
+        json['user_list'].map((x) => UserModel.fromJson(x)),
+      ),
+    );
+  }
+}

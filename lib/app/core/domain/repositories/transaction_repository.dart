@@ -4,7 +4,6 @@ import '../../data/models/transaction_model.dart';
 import '../../data/providers/api_provider.dart';
 import '../../values/api_constants.dart';
 
-
 class TransactionRepository {
   final ApiProvider _apiProvider = Get.find<ApiProvider>();
 
@@ -20,7 +19,7 @@ class TransactionRepository {
       Map<String, dynamic> data = {
         'shop_id': shopId.toString(),
         'date': date,
-        'amount': amount.toString(),
+        'amount': '$amount',
         'description': description,
       };
 
@@ -31,7 +30,8 @@ class TransactionRepository {
       );
 
       if (response.success && response.data != null) {
-        final createResponse = CreateTransactionResponse.fromJson(response.data);
+        final createResponse =
+            CreateTransactionResponse.fromJson(response.data);
 
         // Check if type is success
         if (createResponse.type == 'success') {
@@ -51,6 +51,7 @@ class TransactionRepository {
         errors: response.errors,
       );
     } catch (e) {
+      print("#### ${e.toString()}");
       return ApiResponse.error(
         message: 'Transaction creation failed: ${e.toString()}',
       );
@@ -60,6 +61,7 @@ class TransactionRepository {
   // Get pending transaction list
   Future<ApiResponse<TransactionListResponse>> getPendingTransactions({
     String? date,
+    int page = 1,
   }) async {
     try {
       // Create data
@@ -69,10 +71,15 @@ class TransactionRepository {
         data['date'] = date;
       }
 
+      Map<String, String> queryParameters = {
+        'page': page.toString(),
+      };
+
       // Send pending transactions request
       final response = await _apiProvider.post(
         ApiConstants.transactionPendingList,
         data: data,
+        queryParameters: queryParameters,
       );
 
       if (response.success && response.data != null) {
@@ -89,6 +96,7 @@ class TransactionRepository {
         errors: response.errors,
       );
     } catch (e) {
+      print('####### ${e.toString()}');
       return ApiResponse.error(
         message: 'Failed to fetch pending transactions: ${e.toString()}',
       );
@@ -112,7 +120,8 @@ class TransactionRepository {
       );
 
       if (response.success && response.data != null) {
-        final transactionDetails = TransactionDetailsResponse.fromJson(response.data);
+        final transactionDetails =
+            TransactionDetailsResponse.fromJson(response.data);
 
         return ApiResponse.success(
           message: transactionDetails.text,
@@ -134,6 +143,7 @@ class TransactionRepository {
   // Get approved transaction list
   Future<ApiResponse<TransactionListResponse>> getApprovedTransactions({
     String? date,
+    int page = 1,
   }) async {
     try {
       // Create data
@@ -143,10 +153,15 @@ class TransactionRepository {
         data['date'] = date;
       }
 
+      Map<String, String> queryParameters = {
+        'page': page.toString(),
+      };
+
       // Send approved transactions request
       final response = await _apiProvider.post(
         ApiConstants.transactionApproveList,
         data: data,
+        queryParameters: queryParameters,
       );
 
       if (response.success && response.data != null) {
@@ -170,7 +185,8 @@ class TransactionRepository {
   }
 
   // Get approved transaction details
-  Future<ApiResponse<TransactionDetailsResponse>> getApprovedTransactionDetails({
+  Future<ApiResponse<TransactionDetailsResponse>>
+      getApprovedTransactionDetails({
     required String date,
   }) async {
     try {
@@ -185,11 +201,10 @@ class TransactionRepository {
         data: data,
       );
 
-
-
       if (response.success && response.data != null) {
         print("Respnse 1: ${response.success}");
-        final transactionDetails = TransactionDetailsResponse.fromJson(response.data);
+        final transactionDetails =
+            TransactionDetailsResponse.fromJson(response.data);
         print("Transacton details: $transactionDetails");
         return ApiResponse.success(
           message: transactionDetails.text,
