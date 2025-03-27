@@ -78,10 +78,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **GitHub:** [abir-anhad](https://github.com/abir-anhad)
 - **Issues:** Report bugs or suggest features [here](https://github.com/abir-anhad/creditapp/issues)
 
----
 
-### Assumptions & Customization
-- **App Purpose:** Assumed to be credit-focused based on the name and code context (transactions, shops).
-- **Tech Stack:** Inferred Flutter with GetX from `Obx`, `controller`, and Dart syntax.
-- **Missing Details:** No specific backend, API, or model details were available, so I kept it generic. Add those if present (e.g., “Connects to a REST API at `api.creditapp.com`”).
-- **License:** Assumed MIT as a common default; replace with the actual license if specified.
